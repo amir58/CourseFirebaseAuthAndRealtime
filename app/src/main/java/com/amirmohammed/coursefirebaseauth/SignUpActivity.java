@@ -11,13 +11,14 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class SignUpActivity extends AppCompatActivity {
 
-    private EditText editTextEmail, editTextPassword;
+    private EditText editTextEmail, editTextPassword, editTextRePassword;
     private Button buttonSignUp;
 
     private FirebaseAuth auth = FirebaseAuth.getInstance();
@@ -36,14 +37,20 @@ public class SignUpActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String email = editTextEmail.getText().toString().trim();
                 String password = editTextPassword.getText().toString().trim();
+                String rePassword = editTextRePassword.getText().toString().trim();
 
                 if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
                     Toast.makeText(SignUpActivity.this, "Please fill all data", Toast
                             .LENGTH_SHORT).show();
-                    editTextEmail.setError("Enter email");
-                    editTextPassword.setError("Enter Password");
                     return;
                 }
+
+                if (!password.equals(rePassword)) {
+                    Toast.makeText(SignUpActivity.this, "خليهم زى بعض", Toast.LENGTH_SHORT)
+                            .show();
+                    return;
+                }
+
 
                 if (password.length() < 8) {
                     Toast.makeText(SignUpActivity.this, "Password must be 8 characters"
@@ -52,22 +59,30 @@ public class SignUpActivity extends AppCompatActivity {
                     return;
                 }
 
-                auth.createUserWithEmailAndPassword(email, password)
-                        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                if (task.isSuccessful()) {
-                                    Toast.makeText(SignUpActivity.this, "Account Created",
-                                            Toast.LENGTH_SHORT).show();
-                                    finish();
+                auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener
+                        (new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(SignUpActivity.this, "الايميل اتعمل يا عم الحج",
+                                    Toast.LENGTH_SHORT).show();
+                            finish();
+                        } else {
+                            Toast.makeText(SignUpActivity.this, "Failed", Toast
+                                    .LENGTH_SHORT).show();
+                        }
 
-                                } else {
-                                    Toast.makeText(SignUpActivity.this, "Failed", Toast
-                                            .LENGTH_SHORT).show();
-                                }
-                            }
-                        });
+
+                    }
+                }).addOnFailureListener(SignUpActivity.this, new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(SignUpActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
             }
         });
     }
+
 }
