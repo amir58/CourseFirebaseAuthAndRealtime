@@ -111,6 +111,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
     private void userValidation() {
         if (auth.getCurrentUser() == null) {
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
